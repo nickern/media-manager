@@ -1,0 +1,24 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+    <logger name="org.eclipse.jetty" level="INFO"/>
+    <logger name="io.netty" level="INFO"/>
+
+    <!-- Set Ktor logging level -->
+    <logger name="io.ktor" level="INFO"/>
+
+    <!-- Set Liquibase logging level -->
+    <logger name="liquibase" level="INFO"/>
+    <logger name="liquibase.servicelocator" level="WARN"/>
+    <logger name="liquibase.resource" level="WARN"/>
+    <logger name="liquibase.executor" level="INFO"/>
+    <logger name="liquibase.database" level="INFO"/>
+    <logger name="liquibase.changelog" level="INFO"/>
+
+</configuration>

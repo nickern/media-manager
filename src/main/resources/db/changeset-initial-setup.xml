@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="1" author="tautulli-integration">
+        <!-- Users table -->
+        <createTable tableName="users">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_login" type="TIMESTAMP"/>
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Movies table -->
+        <createTable tableName="movies">
+            <!-- Previous movies columns remain the same -->
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <!-- ... other movie columns ... -->
+        </createTable>
+
+        <!-- TV Shows table -->
+        <createTable tableName="tv_shows">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="year_started" type="INTEGER"/>
+            <column name="year_ended" type="INTEGER"/>
+            <column name="status" type="VARCHAR(20)"/>
+            <column name="rating" type="DECIMAL(3,1)"/>
+            <column name="summary" type="TEXT"/>
+            <column name="poster_url" type="VARCHAR(512)"/>
+            <column name="content_rating" type="VARCHAR(10)"/>
+            <column name="studio" type="VARCHAR(100)"/>
+            <column name="genre" type="VARCHAR(255)"/>
+            <column name="added_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="TIMESTAMP"/>
+        </createTable>
+
+        <!-- Seasons table with cascade delete -->
+        <createTable tableName="tv_seasons">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="show_id" type="INTEGER">
+                <constraints nullable="false"
+                             foreignKeyName="fk_season_show"
+                             references="tv_shows(id)"
+                             deleteCascade="true"/>
+            </column>
+            <column name="season_number" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="year" type="INTEGER"/>
+            <column name="poster_url" type="VARCHAR(512)"/>
+            <column name="summary" type="TEXT"/>
+            <column name="added_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Episodes table with cascade delete -->
+        <createTable tableName="tv_episodes">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="season_id" type="INTEGER">
+                <constraints nullable="false"
+                             foreignKeyName="fk_episode_season"
+                             references="tv_seasons(id)"
+                             deleteCascade="true"/>
+            </column>
+            <column name="episode_number" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duration" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rating" type="DECIMAL(3,1)"/>
+            <column name="file_size" type="BIGINT"/>
+            <column name="play_count" type="INTEGER" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_played" type="TIMESTAMP"/>
+            <column name="added_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="summary" type="TEXT"/>
+            <column name="directors" type="VARCHAR(255)"/>
+            <column name="writers" type="VARCHAR(255)"/>
+            <column name="air_date" type="DATE"/>
+        </createTable>
+
+        <!-- Watch History table -->
+        <createTable tableName="watch_history">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false"
+                             foreignKeyName="fk_history_user"
+                             references="users(id)"
+                             deleteCascade="true"/>
+            </column>
+            <column name="content_type" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="watched_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duration_watched" type="INTEGER"/>
+            <column name="completed" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="platform" type="VARCHAR(50)"/>
+            <column name="device" type="VARCHAR(50)"/>
+        </createTable>
+
+        <!-- Indexes -->
+        <createIndex tableName="users" indexName="idx_users_username">
+            <column name="username"/>
+        </createIndex>
+
+        <createIndex tableName="users" indexName="idx_users_email">
+            <column name="email"/>
+        </createIndex>
+
+        <createIndex tableName="movies" indexName="idx_movies_title">
+            <column name="title"/>
+        </createIndex>
+
+        <createIndex tableName="tv_shows" indexName="idx_shows_title">
+            <column name="title"/>
+        </createIndex>
+
+        <createIndex tableName="tv_seasons" indexName="idx_seasons_show_number">
+            <column name="show_id"/>
+            <column name="season_number"/>
+        </createIndex>
+
+        <createIndex tableName="tv_episodes" indexName="idx_episodes_season_number">
+            <column name="season_id"/>
+            <column name="episode_number"/>
+        </createIndex>
+
+        <createIndex tableName="watch_history" indexName="idx_watch_history_user">
+            <column name="user_id"/>
+            <column name="content_type"/>
+            <column name="watched_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
